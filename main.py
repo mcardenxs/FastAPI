@@ -24,6 +24,13 @@ movies = [
 def read_root():
     return HTMLResponse('<h2>Hola mundo</h2>')
 
-@app.get("/movies")
+@app.get("/movies", tags=['movies'])
 def get_movies():
     return movies
+
+@app.get("/movies/{id}", tags=['get movie'])
+def get_movie(id: int):
+    for item in movies:
+        if item["id"] == id:
+            return item
+    return []
