@@ -33,4 +33,7 @@ def get_movie(id: int):
     for item in movies:
         if item["id"] == id:
             return item
-    return []
+    return {"Pelicula no encontrada"}
+
+
+
