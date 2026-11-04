@@ -7,6 +7,23 @@ app = FastAPI(
     version='0.0.1'
 )
 
-@app.get("/", tags=['inicio'])
+movies = [
+    {
+        "id": 1,
+        "title": "Son como niños",
+        "overview": (
+            "Un grupo de amigos de la infancia se reencuentran después de muchos años "
+            "y deciden pasar un fin de semana juntos"
+        ),
+        "rating": 7.1,
+        "category": "Comedia"
+    }
+]
+
+@app.get("/", tags=['inicio']   )
 def read_root():
-    return HTMLResponse('<h2>Hola mundo!</h2>')
+    return HTMLResponse('<h2>Hola mundo</h2>')
+
+@app.get("/movies")
+def get_movies():
+    return movies
