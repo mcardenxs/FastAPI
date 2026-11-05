@@ -28,12 +28,24 @@ def read_root():
 def get_movies():
     return movies
 
-@app.get("/movies/{id}", tags=['get movie'])
+@app.get("/movies/{id}", tags=['movies'])
 def get_movie(id: int):
     for item in movies:
         if item["id"] == id:
             return item
     return {"Pelicula no encontrada"}
 
+@app.get('/movies/', tags=['movies'])
+def get_movies_by_category(category: str):
+    return category
 
-
+@app.post('/movies', tags=['movies'])
+def create_movie(
+    id: int = Body(),
+    title: str = Body(),
+    overview: str = Body(),
+    year: int = Body(),
+    rating: float = Body(),
+    category: str = Body()
+):
+    return title
