@@ -1,5 +1,9 @@
+from unicodedata import category
+
 from fastapi import FastAPI
+from fastapi import Body
 from fastapi.responses import HTMLResponse
+
 
 app = FastAPI(
     title='Aprendiendo FastAPI',
@@ -48,4 +52,31 @@ def create_movie(
     rating: float = Body(),
     category: str = Body()
 ):
+    movies.append({
+    "id": id,
+    "title": title,
+    "overview": overview,
+    "year": year,
+    "rating": rating,
+    "category": category
+})
+    print(movies)
     return title
+
+@app.put('movies/{id}', tags=['movies'])
+def update_movie(
+    id: int,
+    title: str = Body(),
+    overview: str = Body(),
+    year: int = Body(),
+    rating: float = Body(),
+    category: str = Body()
+):
+    for item in movies:
+        if item["id"] == id:
+            item["title"] = title
+            item["overview"] = overview
+            item["year"] = year
+            item["rating"] = rating
+            item["category"] = category
+            return movies
