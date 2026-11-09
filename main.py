@@ -3,6 +3,7 @@ from unicodedata import category
 from fastapi import FastAPI
 from fastapi import Body
 from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
 
 
 app = FastAPI(
