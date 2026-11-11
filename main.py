@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi import Body
+from fastapi import Body, Path
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -41,7 +41,7 @@ def get_movies():
     return movies
 
 @app.get("/movies/{id}", tags=['movies'])
-def get_movie(id: int):
+def get_movie(id: int = Path(ge=1, le=100)):
     for item in movies:
         if item["id"] == id:
             return item
@@ -53,7 +53,7 @@ def get_movies_by_category(category: str):
 
 @app.post('/movies', tags=['movies'])
 def create_movie(movie: Movie):
-    movies.append(movie)
+    movies.append(movie.model_dump())
     print(movies)
     return movies
 
@@ -74,3 +74,4 @@ def delete_movie(id: int):
         if item["id"] == id:
             movies.remove(item)
             return movies
+
