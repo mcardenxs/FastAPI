@@ -45,19 +45,19 @@ def get_movie(id: int = Path(ge=1, le=100)):
     for item in movies:
         if item["id"] == id:
             return item
-    return {"Pelicula no encontrada"}
+    return JSONResponse(content={"message": "Pelicula no encontrada"})
 
 @app.get('/movies/', tags=['movies'])
 def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
     return category
 
-@app.post('/movies', tags=['movies'])
+@app.post('/movies', tags=['movies'], status_code=201)
 def create_movie(movie: Movie):
     movies.append(movie.model_dump())
     print(movies)
-    return movies
+    return JSONResponse(content={"message": "Pelicula agregada correctamente"})
 
-@app.put('/movies/{id}', tags=['movies'])
+@app.put('/movies/{id}', tags=['movies'], status_code=200)
 def update_movie(id: int, movie: Movie):
     for item in movies:
         if item["id"] == id:
@@ -66,12 +66,12 @@ def update_movie(id: int, movie: Movie):
             item["year"] = movie.year
             item["rating"] = movie.rating
             item["category"] = movie.category
-            return movies
+            return JSONResponse(content={"message": "Pelicula modificada correctamente"})
 
-@app.delete('/movies/{id}', tags=['movies'])
+@app.delete('/movies/{id}', tags=['movies'], status_code=200)
 def delete_movie(id: int):
     for item in movies:
         if item["id"] == id:
             movies.remove(item)
-            return movies
+            return JSONResponse(content={"message": "Pelicula eliminada correctamente"})
 
