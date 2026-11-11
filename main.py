@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from fastapi import Body, Path
-from fastapi.responses import HTMLResponse
+from fastapi import Body, Path, Query
+from fastapi.responses import HTMLResponse,JSONResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 
@@ -38,7 +38,7 @@ def read_root():
 
 @app.get("/movies", tags=['movies'])
 def get_movies():
-    return movies
+    return JSONResponse(content=movies)
 
 @app.get("/movies/{id}", tags=['movies'])
 def get_movie(id: int = Path(ge=1, le=100)):
@@ -48,7 +48,7 @@ def get_movie(id: int = Path(ge=1, le=100)):
     return {"Pelicula no encontrada"}
 
 @app.get('/movies/', tags=['movies'])
-def get_movies_by_category(category: str):
+def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
     return category
 
 @app.post('/movies', tags=['movies'])
