@@ -55,7 +55,7 @@ def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
 def create_movie(movie: Movie):
     movies.append(movie.model_dump())
     print(movies)
-    return JSONResponse(content={"message": "Pelicula agregada correctamente"})
+    return JSONResponse(status_code=201,content={"message": "Pelicula agregada correctamente"})
 
 @app.put('/movies/{id}', tags=['movies'], status_code=200)
 def update_movie(id: int, movie: Movie):
@@ -66,12 +66,12 @@ def update_movie(id: int, movie: Movie):
             item["year"] = movie.year
             item["rating"] = movie.rating
             item["category"] = movie.category
-            return JSONResponse(content={"message": "Pelicula modificada correctamente"})
+            return JSONResponse(status_code=200, content={"message": "Pelicula modificada correctamente"})
 
 @app.delete('/movies/{id}', tags=['movies'], status_code=200)
 def delete_movie(id: int):
     for item in movies:
         if item["id"] == id:
             movies.remove(item)
-            return JSONResponse(content={"message": "Pelicula eliminada correctamente"})
+            return JSONResponse(status_code=200, content={"message": "Pelicula eliminada correctamente"})
 
