@@ -74,4 +74,3 @@ def delete_movie(id: int):
         if item["id"] == id:
             movies.remove(item)
             return JSONResponse(status_code=200, content={"message": "Pelicula eliminada correctamente"})
-
