@@ -4,12 +4,17 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from user_jwt import createToken, validateToken
 from fastapi.security import HTTPBearer
+from bd.database import Session, engine, Base
+from models.movie import Movie as ModelMovie
+from fastapi.encoders import jsonable_encoder
 
 app = FastAPI(
     title='Aprendiendo FastAPI',
     description='Una api en los primeros pasos',
     version='0.0.1'
 )
+
+Base.metadata.create_all(bind=engine)
 
 class BearerJWT(HTTPBearer):
     async def __call__(self, request: Request):
@@ -57,26 +62,31 @@ def read_root():
 
 @app.get("/movies", tags=['movies'], dependencies=[Depends(BearerJWT())])
 def get_movies():
-    return JSONResponse(content=movies)
+    db = Session()
+    data = db.query(ModelMovie).all()
+    return JSONResponse(content=jsonable_encoder(data))
 
-@app.get("/movies/{id}", tags=['movies'])
+@app.get("/movies/{id}", tags=['movies'], status_code=200, dependencies=[Depends(BearerJWT())])
 def get_movie(id: int = Path(ge=1, le=100)):
-    for item in movies:
-        if item["id"] == id:
-            return item
-    return JSONResponse(content={"message": "Pelicula no encontrada"})
+    db = Session()
+    data = db.query(ModelMovie).filter(ModelMovie.id == id).first()
+    if not data:
+        return JSONResponse(status_code=404, content={'message': 'Recurso no encontrado'})
+    return JSONResponse(status_code=200, content=jsonable_encoder(data))
 
-@app.get('/movies/', tags=['movies'])
+@app.get('/movies/', tags=['movies'], dependencies=[Depends(BearerJWT())])
 def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
     return category
 
-@app.post('/movies', tags=['movies'], status_code=201)
+@app.post('/movies', tags=['movies'], status_code=201, dependencies=[Depends(BearerJWT())])
 def create_movie(movie: Movie):
-    movies.append(movie.model_dump())
-    print(movies)
-    return JSONResponse(status_code=201,content={"message": "Pelicula agregada correctamente"})
+    db = Session()
+    newMovie = ModelMovie(**movie.model_dump())
+    db.add(newMovie)
+    db.commit()
+    return JSONResponse(status_code=201, content={'message': 'Se ha cargado una nueva pelicula', 'movie': [movie.model_dump()]})
 
-@app.put('/movies/{id}', tags=['movies'], status_code=200)
+@app.put('/movies/{id}', tags=['movies'], status_code=200, dependencies=[Depends(BearerJWT())])
 def update_movie(id: int, movie: Movie):
     for item in movies:
         if item["id"] == id:
@@ -87,7 +97,7 @@ def update_movie(id: int, movie: Movie):
             item["category"] = movie.category
             return JSONResponse(status_code=200, content={"message": "Pelicula modificada correctamente"})
 
-@app.delete('/movies/{id}', tags=['movies'], status_code=200)
+@app.delete('/movies/{id}', tags=['movies'], status_code=200, dependencies=[Depends(BearerJWT())])
 def delete_movie(id: int):
     for item in movies:
         if item["id"] == id:
