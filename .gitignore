@@ -28,4 +28,5 @@ __pycache__/
 
 # Logs y base de datos local
 *.log
+*.sqlite
 *.sqlite3
